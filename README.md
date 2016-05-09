@@ -1,6 +1,6 @@
 # Modular Redux StyleGuide
 
-Conventions that allow you to create **modular Redux**.
+Conventions that allow you to create **modular Redux**. A Redux application may even broken up into smaller NPM modules.
 
 Can Redux be scalable? I believe so. **Actions**, **reducers** & **components** can all be composed into smaller, feature based modules with their own isolated data trees.
 
@@ -267,7 +267,7 @@ Similarly, components can be exported from a module.
 export {default as Page} from './Page';
 ```
 
-Then components may be imported into a local index file.
+Then components may be imported into a local index file, and imported into a component.
 
 ```js
 // loading components
