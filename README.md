@@ -2,8 +2,16 @@
 
 Conventions that allow you to create **modular Redux**.
 
-Can Redux be scalable? I believe so. Actions, reducers & components can all be
-composed in
+Can Redux be scalable? I believe so. **Actions**, **reducers** & **components** can all be composed into smaller, feature based modules with their own isolated data trees.
+
+## Index
+
+1. [Store](#store)
+1. [Actions](#actions)
+1. [Action Types](#action-types)
+1. [Reducers](#reducers)
+1. [Components](#components)
+1. [Modules](#modules)
 
 
 ### Store
@@ -46,6 +54,11 @@ import store from '../store';
 
     `{type: 'NAME', payload: {}, error, status }`
 
+    - **type**: the action name
+    - **payload**: all necessary variables to pass to reducers
+    - **error**: error handling. May be a boolean or an object
+    - **status**: often used with [Redux Promise](https://github.com/acdlite/redux-promise) (pending, resolved, etc.)
+
 1. *Avoid importing state*. Use **thunks** instead.
 
 ```js
@@ -87,9 +100,9 @@ export function pageSet() {
 
 ### Reducers
 
-1. Name reducers with a noun, using the data they will change
+1. Name reducers as *noun + Reducer* ('pageReducer')
 
-1. Default params
+1. Use [Default params](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Default_parameters)
 
 ```js
 const _page: CR.Page = {
@@ -103,7 +116,7 @@ export default function pageReducer(page = _page, action){
 }
 ```
 
-1.
+1. Use `switch` statements with a `default` case
 
 ```js
 import {PAGE_SET} from './types';
@@ -131,7 +144,7 @@ switch (action.type) {
 }
 ```
 
-1. Avoid mutations. Write pure functions.
+1. Avoid mutations. Write **pure functions**. Pure functions are predictable, meaning fewer bugs.
 
   - Avoid array mutation with `.concat` over `.push`
 
@@ -161,21 +174,61 @@ switch (action.type) {
 
 ### Components
 
-Understand smart and dumb components.
+React apps are generally broken into smart and dumb components.
 
+- **dumb**: components that do not change data. These do not need to be connected to Redux. Dumb components can generally be created as [stateless functions](https://facebook.github.io/react/docs/reusable-components.html#stateless-functions)
+
+- **smart**: these components can trigger actions. They can be setup using [react-redux](https://github.com/reactjs/react-redux).
+
+Smart components should be as atomic as possible, allowing for greater re-use. This may mean only the smallest tag, such as an event button, connects to the Redux store. Changes are propagated through 'props', and storing data in 'state' should be avoided.
+
+'React-redux' provides an optional decorator syntax (`@connect`).
+
+```js
+import * as React from 'react';
+import {connect} from 'react-redux';
+import {pageNext} from '../actions';
+
+// null triggers the PureRenderMixin
+@connect(null, (dispatch, getState) => {
+  return {
+    callNextPage: () => {
+      dispatch(pageNext());
+    }
+  };
+})
+export default class Continue extends React.Component {
+  render() {
+    return (
+      <button onClick={this.props.callNextPage}>Continue</button>
+    );
+  }
+}
+```
 
 ### Modules
+
+Redux applications can be composed in such a way that reducers and actions can be included as modules or even NPM packages.
+
+Modules can include any combination of *actions*, *reducers* and *components*.
+
+See an example of an exported module below:
 
 ```js
 // pageModule
 import * as actions from './actions';
-import * as components from './components';
 import reducers from './reducers';
+import * as components from './components';
 
-export {actions, components, reducers};
+
+export {actions, reducers, components};
 ```
 
+
+
 ##### Modular Reducers
+
+Reducers are merely objects composed of reducer names (keys) and reducers (values). Reducers can be easily exported.
 
 ```js
 // Module
@@ -188,9 +241,12 @@ const reducers = {
 export default reducers;
 ```
 
+Reducer objects can then be imported from a module, and combined into the list of app reducers.
+
 ```js
-// Loading reducers
+// Loading module reducers
 import {reducers} from 'pageModule';
+// local reducer
 import checks from './checks';
 
 export default combineReducers(
@@ -204,10 +260,14 @@ export default combineReducers(
 
 ##### Modular Components
 
+Similarly, components can be exported from a module.
+
 ```js
 // module
 export {default as Page} from './Page';
 ```
+
+Then components may be imported into a local index file.
 
 ```js
 // loading components
