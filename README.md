@@ -40,7 +40,7 @@ const store: Redux.Store = createStore(
 export default store;
 ```
 
-1. Avoid importing 'store'. Additional imports break the ability to easily create reusable modules.
+2. Avoid importing 'store'. Additional imports break the ability to easily create reusable modules.
 
 ```js
 // BAD
@@ -59,7 +59,7 @@ import store from '../store';
     - **error**: error handling. May be a boolean or an object
     - **status**: often used with [Redux Promise](https://github.com/acdlite/redux-promise) (pending, resolved, etc.)
 
-1. *Avoid importing state*. Use **thunks** instead.
+2. *Avoid importing state*. Use **thunks** instead.
 
 ```js
 // BAD
@@ -102,7 +102,7 @@ export function pageSet() {
 
 1. Name reducers as *noun + Reducer* ('pageReducer')
 
-1. Use [Default params](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Default_parameters)
+2. Use [Default params](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Functions/Default_parameters)
 
 ```js
 const _page: CR.Page = {
@@ -116,7 +116,7 @@ export default function pageReducer(page = _page, action){
 }
 ```
 
-1. Use `switch` statements with a `default` case
+3. Use `switch` statements with a `default` case
 
 ```js
 import {PAGE_SET} from './types';
@@ -144,7 +144,7 @@ switch (action.type) {
 }
 ```
 
-1. Avoid mutations. Write **pure functions**. Pure functions are predictable, meaning fewer bugs.
+4. Avoid mutations. Write **pure functions**. Pure functions are predictable, meaning fewer bugs.
 
   - Avoid array mutation with `.concat` over `.push`
 
