@@ -4,6 +4,8 @@ Conventions that allow you to create **modular Redux**. A Redux application may 
 
 Can Redux be scalable? I believe so. **Actions**, **reducers** & **components** can all be composed into smaller, feature based modules with their own isolated data trees.
 
+For React/Redux examples, see the [Atom-CodeRoad](https://github.com/coderoad/atom-coderoad) codebase.
+
 ## Index
 
 1. [Store](#store)
@@ -89,10 +91,12 @@ export function pageSet() {
 }
 ```
 
+3. Treat action creators as dispatchers, rather than piling logic in multiple reducers across action types.
+
 
 ### Action Types
 
-1. Name actions by feature (*'NOUN_VERB'*)
+1. Name actions by feature (*'NOUN_VERB'* using *UPPER_SNAKE_CASE*)
 
   `export const PAGE_SET = 'PAGE_SET';`
 
@@ -116,7 +120,9 @@ export default function pageReducer(page = _page, action){
 }
 ```
 
-3. Use `switch` statements with a `default` case
+3. Limit the number of action types within a reducer. Use action dispatchers instead.
+
+4. Use `switch` statements with a `default` case
 
 ```js
 import {PAGE_SET} from './types';
@@ -144,7 +150,40 @@ switch (action.type) {
 }
 ```
 
-4. Avoid mutations. Write **pure functions**. Pure functions are predictable, meaning fewer bugs.
+5. Consider using 'filters' to simplify reducers while maintaining readability.
+
+```js
+case TEST_RESULT:
+      const result = action.payload.result;
+
+      switch (action.payload.filter) {
+
+        case 'PASS':
+          return setAlert({
+            message: result.msg,
+            action: 'pass',
+            duration: result.duration || 1200,
+          }, '#73C990');
+
+        case 'FAIL':
+          return setAlert({
+            message: result.msg,
+            action: 'fail',
+            duration: result.duration || 2200,
+          }, '#FF4081');
+      }
+      // Note
+      return setAlert({
+        message: result.msg,
+        duration: result.duration || 2200,
+      }, '#9DA5B4');
+
+    default:
+      return alert;
+  }
+```
+
+5. Avoid mutations. Write **pure functions**. Pure functions are predictable, meaning fewer bugs.
 
   - Avoid array mutation with `.concat` over `.push`
 
@@ -224,7 +263,14 @@ import * as components from './components';
 export {actions, reducers, components};
 ```
 
+##### Exporting Actions
 
+Simply export your module actions.
+
+```js
+export {pageSet, pageNext, pagePositionSet} from './page';
+export {alertToggle, alertReplay} from './alert';
+```
 
 ##### Modular Reducers
 
